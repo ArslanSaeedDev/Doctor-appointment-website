@@ -28,7 +28,7 @@ const Hero = () => {
         </div>
 
         <a
-          href='/doctors'
+          href='/doctor'
           className='flex items-center gap-2 bg-white px-6 py-2 sm:px-8 sm:py-3 font-medium rounded-full text-gray-700 text-sm sm:text-base mt-4 transform transition-all duration-300 hover:scale-105 hover:shadow-lg'
         >
           Book Appointment
