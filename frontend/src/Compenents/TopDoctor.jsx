@@ -27,7 +27,7 @@ function TopDoctor() {
             className="flex flex-col border border-gray-200 rounded-lg cursor-pointer overflow-hidden transition-transform duration-300 ease-in-out hover:translate-y-[-5px]"
           >
             {/* Doctor Image */}
-            <div className="w-full bg-blue-50 h-[150px] md:h-[180px]">
+            <div className="w-full bg-blue-50 h-[250px] md:h-[180px]">
               <img
                 src={item.image}
                 alt={item.name}
