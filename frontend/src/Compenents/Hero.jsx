@@ -37,7 +37,7 @@ const Hero = () => {
       </div>
 
       {/* --- Right Side --- */}
-      <div className='md:w-1/2 flex items-end justify-end'>
+      <div className='md:w-1/2 flex items-end justify-end '>
         <img
           className='hidden md:block w-full max-w-xl lg:max-w-none lg:h-auto object-contain object-bottom'
           src={assets.header_img}
