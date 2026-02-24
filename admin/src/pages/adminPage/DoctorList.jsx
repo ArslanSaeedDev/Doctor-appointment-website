@@ -18,7 +18,7 @@ const DoctorList = () => {
               <img
                 src={item.image}
                 alt={item.name}
-                className="w-full h-48 object-cover object-center"
+                className="w-full h-64 object-cover object-center"
               />
             </div>
 
