@@ -56,15 +56,15 @@ export const AppContextProvider = (props) => {
   }, [token])
 
   // Context value
-  const value = {
-    doctors,getAllDoctor,
-    backendUrl,
-    token, 
-    setToken,
-    userData,
-    setUserData,
-    getUserProfile
-  };
+  // const value = {
+  //   doctors,getAllDoctor,
+  //   backendUrl,
+  //   token, 
+  //   setToken,
+  //   userData,
+  //   setUserData,
+  //   getUserProfile
+  // };
 
   return <AppContext.Provider value={value}>{props.children}</AppContext.Provider>;
 };
