@@ -1,6 +1,6 @@
 import React from 'react'
 import {  Route ,Routes} from 'react-router-dom';
-import { Home, About, Contact, Login, Doctors, MyProfile, MyAppointment ,Appointment} from './Pages';
+import { Home, About, Contact, Login, Doctors, MyProfile, MyAppointment, Appointment, Chat } from './Pages';
 import Navbar from './Compenents/Navbar';
 import Footer from './Compenents/Footer';
 import { ToastContainer } from 'react-toastify';
@@ -21,7 +21,9 @@ function App() {
         <Route path="/doctor/:speciality" element={<Doctors/>}/>
         <Route path="/profile" element={<MyProfile/>}/>
         <Route path='/myAppointment' element={<MyAppointment/>}></Route>
-         <Route path="/appointment/:docId" element={<Appointment />} /> 
+         <Route path="/appointment/:docId" element={<Appointment />} />
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/chat/:docId" element={<Chat />} />
       </Routes>
       <Footer/>
       

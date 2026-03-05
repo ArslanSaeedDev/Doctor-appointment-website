@@ -2,12 +2,14 @@ import React, { useContext, useState } from 'react';
 import { assets } from "../assets/assets";
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
+import { ChatContext } from '../context/ChatContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 function Navbar() {
   const navigate = useNavigate();
   const { token, setToken, userData, setUserData } = useContext(AppContext);
+  const { unreadCount } = useContext(ChatContext);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -60,6 +62,10 @@ function Navbar() {
             <div className="w-full flex flex-col gap-2 border-t pt-3 cursor-pointer">
               <p onClick={() => { navigate("/profile"); setIsMobileMenuOpen(false); }}>My Profile</p>
               <p onClick={() => { navigate("/myAppointment"); setIsMobileMenuOpen(false); }}>My Appointment</p>
+              <p onClick={() => { navigate("/chat"); setIsMobileMenuOpen(false); }} className="flex items-center gap-2">
+                Messages
+                {unreadCount > 0 && <span className="bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">{unreadCount > 9 ? '9+' : unreadCount}</span>}
+              </p>
               <p onClick={() => { logOut(); setIsMobileMenuOpen(false); }}>Logout</p>
             </div>
           ) : (
@@ -83,6 +89,10 @@ function Navbar() {
               <div className="min-w-48 bg-stone-100 flex flex-col gap-2 py-3 rounded">
                 <p onClick={() => navigate("/profile")} className="hover:text-black px-4 cursor-pointer">My Profile</p>
                 <p onClick={() => navigate("/myAppointment")} className="hover:text-black px-4 cursor-pointer">My Appointment</p>
+                <p onClick={() => navigate("/chat")} className="hover:text-black px-4 cursor-pointer flex items-center gap-2">
+                  Messages
+                  {unreadCount > 0 && <span className="bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">{unreadCount > 9 ? '9+' : unreadCount}</span>}
+                </p>
                 <p onClick={logOut} className="hover:text-black px-4 cursor-pointer">Logout</p>
               </div>
             </div>

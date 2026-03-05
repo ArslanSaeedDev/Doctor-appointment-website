@@ -6,3 +6,4 @@ export { default as Doctors } from './Doctors';
 export { default as MyProfile } from './MyProfile';
 export { default as MyAppointment } from './MyAppointment';
 export { default as Appointment } from './Appointment';
+export { default as Chat } from './Chat';

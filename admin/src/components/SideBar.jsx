@@ -29,6 +29,10 @@ function SideBar() {
             <img src={assets.add_icon} alt="" />
             <p className='hidden md:block'>Add Doctor</p>
           </NavLink>
+          <NavLink to={"/messages"} className={({ isActive }) => `flex items-center  gap-3 px-3 md:px-9 py-3.5  md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`}>
+            <img src={assets.people_icon} alt="" />
+            <p className='hidden md:block'>Messages</p>
+          </NavLink>
         </ul>
 
       }
@@ -45,6 +49,10 @@ function SideBar() {
           <NavLink to={"/profile"} className={({ isActive }) => `flex items-center  gap-3 px-3 md:px-9 py-3.5  md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`}>
             <img src={assets.add_icon} alt="" />
             <p className='hidden md:block'>Profile</p>
+          </NavLink>
+          <NavLink to={"/doctor-messages"} className={({ isActive }) => `flex items-center  gap-3 px-3 md:px-9 py-3.5  md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`}>
+            <img src={assets.people_icon} alt="" />
+            <p className='hidden md:block'>Messages</p>
           </NavLink>
         </ul>
       }

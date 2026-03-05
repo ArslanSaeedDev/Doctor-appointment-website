@@ -14,6 +14,8 @@ import DoctorList from './pages/adminPage/DoctorList';
 import DoctorDashboard from './pages/doctorPage/DoctorDashboard';
 import DoctorAppointments from './pages/doctorPage/DoctorAppointments';
 import Profile from './pages/doctorPage/Profile';
+import DoctorMessages from './pages/doctorPage/DoctorMessages';
+import AdminMessages from './pages/adminPage/AdminMessages';
 
 function App() {
   const { aToken } = useContext(AdminContext);
@@ -35,11 +37,13 @@ function App() {
               <Route path='/add-doctor' element={<AddDoctor />} />
               <Route path='/all-appointment' element={<AllAppointment />} />
               <Route path='/doctor-list' element={<DoctorList />} />
+              <Route path='/messages' element={<AdminMessages />} />
 
               {/* Doctor Routes */}
               <Route path='/doctor-dashboard' element={<DoctorDashboard />} />
               <Route path='/doctor-appointments' element={<DoctorAppointments />} />
               <Route path='/profile' element={<Profile />} />
+              <Route path='/doctor-messages' element={<DoctorMessages />} />
             </Routes>
           </div>
         </div>

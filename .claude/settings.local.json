@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__d9f95678-b863-4f99-bf70-6b5b1a6b626e__SearchDocsByLangChain",
+      "Bash(npm install socket.io)",
+      "Bash(npm install socket.io-client)",
+      "Bash(npm install socket.io-client --legacy-peer-deps)"
+    ]
+  }
+}
