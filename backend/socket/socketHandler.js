@@ -1,6 +1,8 @@
 import { socketAuthMiddleware } from "./socketAuth.js";
 import conversationModel from "../models/conversationModel.js";
 import messageModel from "../models/messageModel.js";
+import userModel from "../models/userModel.js";
+import doctorModel from "../models/doctorModel.js";
 
 const onlineUsers = new Map();
 const onlineDoctors = new Map();
@@ -68,6 +70,19 @@ export const setupSocketHandlers = (io) => {
         }
         await conversation.save();
 
+        // Lookup sender info for notification
+        let senderName = "Someone";
+        let senderImage = "";
+        if (senderType === "user") {
+          const user = await userModel.findById(senderId).select("name image");
+          if (user) { senderName = user.name; senderImage = user.image; }
+        } else {
+          const doctor = await doctorModel.findById(senderId).select("name image");
+          if (doctor) { senderName = doctor.name; senderImage = doctor.image; }
+        }
+
+        const messageData = message.toObject();
+
         // Emit to recipient
         const recipientRoom =
           senderType === "user"
@@ -75,17 +90,21 @@ export const setupSocketHandlers = (io) => {
             : `user_${conversation.userId}`;
 
         io.to(recipientRoom).emit("newMessage", {
-          message: message.toObject(),
+          message: messageData,
           conversationId,
+          senderName,
+          senderImage,
         });
 
         // Emit to admin room
         io.to("admin_room").emit("newMessage", {
-          message: message.toObject(),
+          message: messageData,
           conversationId,
+          senderName,
+          senderImage,
         });
 
-        callback({ success: true, message: message.toObject() });
+        callback({ success: true, message: messageData });
       } catch (error) {
         console.error("sendMessage error:", error);
         callback({ error: "Failed to send message" });

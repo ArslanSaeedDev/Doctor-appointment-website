@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState, useRef, useCallb
 import { io } from "socket.io-client";
 import { AppContext } from "./AppContext";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { playNotificationSound, requestNotificationPermission, showBrowserNotification } from "../utils/notificationSound";
 
 export const ChatContext = createContext();
 
@@ -14,6 +16,7 @@ export const ChatContextProvider = (props) => {
   const [messages, setMessages] = useState([]);
   const [typingUsers, setTypingUsers] = useState({});
   const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
   const socketRef = useRef(null);
   const activeConvRef = useRef(null);
 
@@ -27,6 +30,27 @@ export const ChatContextProvider = (props) => {
     const total = conversations.reduce((sum, conv) => sum + (conv.userUnread || 0), 0);
     setUnreadCount(total);
   }, [conversations]);
+
+  // Update document title with unread count (like Facebook)
+  useEffect(() => {
+    if (unreadCount > 0) {
+      document.title = `(${unreadCount}) New Messages - Doctor Appointment`;
+    } else {
+      document.title = "Doctor Appointment";
+    }
+  }, [unreadCount]);
+
+  // Request notification permission on mount
+  useEffect(() => {
+    if (token) {
+      requestNotificationPermission();
+    }
+  }, [token]);
+
+  // Dismiss a notification popup
+  const dismissNotification = useCallback((id) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  }, []);
 
   // Fetch conversations via REST
   const refreshConversations = useCallback(async () => {
@@ -82,11 +106,61 @@ export const ChatContextProvider = (props) => {
         setOnlineDoctors(docs);
       });
 
-      newSocket.on("newMessage", ({ message, conversationId }) => {
+      newSocket.on("newMessage", ({ message, conversationId, senderName, senderImage }) => {
+        // Add message to active conversation if viewing it
         if (activeConvRef.current?._id === conversationId) {
           setMessages((prev) => [...prev, message]);
         }
+
+        // Refresh conversation list
         refreshConversations();
+
+        // --- NOTIFICATION SYSTEM ---
+        // Only notify if message is from doctor (not our own message)
+        if (message.senderType === "doctor") {
+          const displayName = senderName || "Doctor";
+          const previewText = message.text?.length > 60
+            ? message.text.substring(0, 60) + "..."
+            : message.text;
+
+          // 1. Play notification sound
+          playNotificationSound();
+
+          // 2. Show floating notification popup (WhatsApp style)
+          const notifId = Date.now() + Math.random();
+          setNotifications((prev) => [
+            ...prev.slice(-4), // Keep max 5 notifications
+            {
+              id: notifId,
+              senderName: displayName,
+              senderImage: senderImage || "",
+              text: previewText,
+              conversationId,
+            },
+          ]);
+
+          // 3. Show toast notification
+          toast.info(
+            `${displayName}: ${previewText}`,
+            {
+              position: "bottom-right",
+              autoClose: 4000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              className: "cursor-pointer",
+              icon: "💬",
+            }
+          );
+
+          // 4. Show browser notification (works when tab is not focused)
+          if (document.hidden) {
+            showBrowserNotification(
+              `New message from ${displayName}`,
+              previewText,
+              senderImage
+            );
+          }
+        }
       });
 
       newSocket.on("userTyping", ({ conversationId, senderId, senderType }) => {
@@ -169,6 +243,8 @@ export const ChatContextProvider = (props) => {
     setMessages,
     typingUsers,
     unreadCount,
+    notifications,
+    dismissNotification,
     sendMessage,
     emitTyping,
     emitStopTyping,

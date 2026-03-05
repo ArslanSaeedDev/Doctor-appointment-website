@@ -3,6 +3,8 @@ import { io } from "socket.io-client";
 import { AdminContext } from "./AdminContext";
 import { DoctorContext } from "./DoctorContext";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { playNotificationSound, requestNotificationPermission, showBrowserNotification } from "../utils/notificationSound";
 
 export const ChatContext = createContext();
 
@@ -19,6 +21,7 @@ export const ChatContextProvider = (props) => {
   const [messages, setMessages] = useState([]);
   const [typingUsers, setTypingUsers] = useState({});
   const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
   const socketRef = useRef(null);
   const activeConvRef = useRef(null);
 
@@ -30,6 +33,26 @@ export const ChatContextProvider = (props) => {
     const total = conversations.reduce((sum, conv) => sum + (conv.docUnread || 0), 0);
     setUnreadCount(total);
   }, [conversations]);
+
+  // Update document title with unread count (Facebook style)
+  useEffect(() => {
+    if (unreadCount > 0) {
+      document.title = `(${unreadCount}) New Messages - Admin Panel`;
+    } else {
+      document.title = "Admin Panel - Doctor Appointment";
+    }
+  }, [unreadCount]);
+
+  // Request notification permission
+  useEffect(() => {
+    if (dToken || aToken) {
+      requestNotificationPermission();
+    }
+  }, [dToken, aToken]);
+
+  const dismissNotification = useCallback((id) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  }, []);
 
   // Fetch conversations
   const refreshConversations = useCallback(async () => {
@@ -92,11 +115,56 @@ export const ChatContextProvider = (props) => {
         setOnlineDoctors(docs);
       });
 
-      newSocket.on("newMessage", ({ message, conversationId }) => {
+      newSocket.on("newMessage", ({ message, conversationId, senderName, senderImage }) => {
         if (activeConvRef.current?._id === conversationId) {
           setMessages((prev) => [...prev, message]);
         }
         refreshConversations();
+
+        // --- NOTIFICATION SYSTEM (Doctor side) ---
+        if (tokenType === "doctor" && message.senderType === "user") {
+          const displayName = senderName || "Patient";
+          const previewText = message.text?.length > 60
+            ? message.text.substring(0, 60) + "..."
+            : message.text;
+
+          // 1. Play notification sound
+          playNotificationSound();
+
+          // 2. Toast notification
+          toast.info(
+            `${displayName}: ${previewText}`,
+            {
+              position: "bottom-right",
+              autoClose: 4000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              icon: "💬",
+            }
+          );
+
+          // 3. Floating notification popup
+          const notifId = Date.now() + Math.random();
+          setNotifications((prev) => [
+            ...prev.slice(-4),
+            {
+              id: notifId,
+              senderName: displayName,
+              senderImage: senderImage || "",
+              text: previewText,
+              conversationId,
+            },
+          ]);
+
+          // 4. Browser notification when tab not focused
+          if (document.hidden) {
+            showBrowserNotification(
+              `New message from ${displayName}`,
+              previewText,
+              senderImage
+            );
+          }
+        }
       });
 
       newSocket.on("userTyping", ({ conversationId, senderId, senderType }) => {
@@ -179,6 +247,8 @@ export const ChatContextProvider = (props) => {
     setMessages,
     typingUsers,
     unreadCount,
+    notifications,
+    dismissNotification,
     sendMessage,
     emitTyping,
     emitStopTyping,
