@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 export const AppContext = createContext();
 // Create a provider component
 export const AppContextProvider = (props) => {
-  const [doctors, setDoctors] = useState([);
+  const [doctors, setDoctors] = useState([]);
   const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : '');
   const [userData, setUserData] = useState(false);
 
