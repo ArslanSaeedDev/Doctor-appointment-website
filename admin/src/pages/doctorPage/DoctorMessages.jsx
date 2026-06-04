@@ -20,6 +20,7 @@ function DoctorMessages() {
     typingUsers,
     onlineUsers,
     fetchMessages,
+    refreshConversations,
   } = useContext(ChatContext);
   const { profileData, doctorProfile } = useContext(DoctorContext);
   const [hasMore, setHasMore] = useState(true);
@@ -39,6 +40,7 @@ function DoctorMessages() {
         setMessages(msgs);
         setHasMore(msgs.length >= 30);
         markAsRead(activeConversation._id);
+        refreshConversations();
       };
       loadMessages();
     }

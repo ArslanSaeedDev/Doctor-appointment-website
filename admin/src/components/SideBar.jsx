@@ -1,14 +1,15 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { NavLink } from 'react-router-dom';
 import { assets } from '../assets/assets';
 import { AdminContext } from '../context/AdminContext';
-import { useContext } from 'react';
 import { DoctorContext } from '../context/DoctorContext';
+import { ChatContext } from '../context/ChatContext';
 
 
 function SideBar() {
   const { aToken } = useContext(AdminContext);
   const { dToken } = useContext(DoctorContext);
+  const { unreadCount } = useContext(ChatContext);
   return (
     <div className='min-h-screen border-r bg-white'>
       {
@@ -51,7 +52,14 @@ function SideBar() {
             <p className='hidden md:block'>Profile</p>
           </NavLink>
           <NavLink to={"/doctor-messages"} className={({ isActive }) => `flex items-center  gap-3 px-3 md:px-9 py-3.5  md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`}>
-            <img src={assets.people_icon} alt="" />
+            <div className="relative">
+              <img src={assets.people_icon} alt="" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse-badge">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </div>
             <p className='hidden md:block'>Messages</p>
           </NavLink>
         </ul>

@@ -3,8 +3,10 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AdminContext } from './context/AdminContext';
 import { DoctorContext } from './context/DoctorContext';
+import { ChatContext } from './context/ChatContext';
 import Navbar from './components/Navbar';
 import SideBar from './components/SideBar';
+import NotificationPopup from './components/chat/NotificationPopup';
 import { Route, Routes } from 'react-router-dom';
 import Login from './pages/Login';
 import AdminDashboard from './pages/adminPage/AdminDashboard';
@@ -20,12 +22,14 @@ import AdminMessages from './pages/adminPage/AdminMessages';
 function App() {
   const { aToken } = useContext(AdminContext);
   const { dToken } = useContext(DoctorContext);
+  const { notifications, dismissNotification } = useContext(ChatContext);
 
   // Authenticated
   if (aToken || dToken) {
     return (
       <div className='bg-[#F8F9FD]'>
         <ToastContainer />
+        <NotificationPopup notifications={notifications} onDismiss={dismissNotification} />
         <Navbar />
         <div className='flex items-start'>
           <SideBar />

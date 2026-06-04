@@ -1,9 +1,13 @@
 import React, { useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DoctorContext } from '../../context/DoctorContext';
+import { ChatContext } from '../../context/ChatContext';
 import { assets } from "../../assets/assets";
 
 function DoctorDashboard() {
   const { dToken, dashData, getDashData, cancelAppointment, completeAppointment } = useContext(DoctorContext);
+  const { unreadCount } = useContext(ChatContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (dToken) {
@@ -32,6 +36,25 @@ function DoctorDashboard() {
             <div>
               <p className="text-xl font-semibold">{dashData.totalPatients}</p>
               <p className="text-gray-500">Patients</p>
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div
+            onClick={() => navigate('/doctor-messages')}
+            className="bg-white rounded-lg shadow-md flex items-center gap-4 p-4 hover:scale-105 transition-transform cursor-pointer"
+          >
+            <div className="relative">
+              <img src={assets.people_icon} alt="Messages Icon" className="w-12 h-12" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse-badge">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </div>
+            <div>
+              <p className="text-xl font-semibold">{unreadCount}</p>
+              <p className="text-gray-500">Unread Messages</p>
             </div>
           </div>
         </div>

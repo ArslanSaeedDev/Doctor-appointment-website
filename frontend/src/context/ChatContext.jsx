@@ -230,7 +230,15 @@ export const ChatContextProvider = (props) => {
 
   const markAsRead = useCallback((conversationId) => {
     socketRef.current?.emit("markRead", { conversationId });
-  }, []);
+    // Immediately clear unread count locally so badges disappear instantly
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv._id === conversationId ? { ...conv, userUnread: 0 } : conv
+      )
+    );
+    // Also refresh from server to stay in sync
+    refreshConversations();
+  }, [refreshConversations]);
 
   const value = {
     socket,

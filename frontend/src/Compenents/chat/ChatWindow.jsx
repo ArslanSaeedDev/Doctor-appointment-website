@@ -6,7 +6,7 @@ import { ChatContext } from '../../context/ChatContext';
 import { AppContext } from '../../context/AppContext';
 
 function ChatWindow({ conversation, onBack }) {
-  const { messages, setMessages, sendMessage, emitTyping, emitStopTyping, markAsRead, typingUsers, onlineDoctors, fetchMessages } = useContext(ChatContext);
+  const { messages, setMessages, sendMessage, emitTyping, emitStopTyping, markAsRead, typingUsers, onlineDoctors, fetchMessages, refreshConversations } = useContext(ChatContext);
   const { userData } = useContext(AppContext);
   const [hasMore, setHasMore] = useState(true);
 
@@ -22,6 +22,7 @@ function ChatWindow({ conversation, onBack }) {
         setMessages(msgs);
         setHasMore(msgs.length >= 30);
         markAsRead(conversation._id);
+        refreshConversations();
       };
       loadMessages();
     }
